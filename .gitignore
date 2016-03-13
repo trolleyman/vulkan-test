@@ -1,2 +1,5 @@
+# Output folder
 target
+
+# Auto-generated files
 src/shaders/*

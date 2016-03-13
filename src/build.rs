@@ -4,7 +4,8 @@ extern crate glsl_to_spirv;
 use std::io::{self, Read, Write};
 use std::env;
 use std::path::{Path, PathBuf};
-use std::fs::{self, OpenOptions};
+use std::fs::{self, File, OpenOptions};
+use std::ascii::AsciiExt;
 
 use glsl_to_spirv::ShaderType;
 
@@ -31,8 +32,22 @@ fn append_shader_type(name: &mut String, ty: ShaderType) {
 	});
 }
 
+fn to_snake_case(name: &str) -> String {
+	let mut ret = String::new();
+	for (i, c) in name.chars().enumerate() {
+		if c.to_ascii_uppercase() == c {
+			if i != 0 {
+				ret.push('_');
+			}
+			ret.push(c.to_ascii_lowercase());
+		} else {
+			ret.push(c);
+		}
+	}
+	ret
+}
+
 fn main() {
-	// TODO: Change panics to exits.
 	let manifest_dir = env::var_os("CARGO_MANIFEST_DIR").unwrap();
 	let shaders_in_dir = PathBuf::new().join(&manifest_dir).join("shaders");
 	fs::create_dir_all(&shaders_in_dir).expect("Could not create shaders directory.");
@@ -86,10 +101,21 @@ fn main() {
 			});
 	
 	let shaders_dir = PathBuf::new().join(&manifest_dir).join("src/shaders/");
+	if shaders_dir.exists() {
+		fs::remove_dir_all(&shaders_dir).expect("Could not clean shaders directory.");
+	}
 	fs::create_dir_all(&shaders_dir).expect("Could not create shaders directory.");
 	
+	let mut shaders_mod_file = File::create(shaders_dir.join("mod.rs")).expect("Could not create src/shaders/mod.rs");
+	
+	writeln!(shaders_mod_file, "#![allow(dead_code, unused_variables)]").expect("Could not write to src/shaders/mod.rs");
+	
 	for (name, out) in shaders {
-		let path = shaders_dir.join(&name).with_extension("rs");
+		let snake_case_name = to_snake_case(&name);
+		writeln!(shaders_mod_file, "pub mod {};", snake_case_name).expect("Could not write to src/shaders/mod.rs");
+		writeln!(shaders_mod_file, "pub use self::{}::{};", snake_case_name, name).expect("Could not write to src/shaders/mod.rs");
+		
+		let path = shaders_dir.join(&snake_case_name).with_extension("rs");
 		println!("Writing shader to '{}'", path.display());
 		let mut f = OpenOptions::new().write(true).create(true).truncate(true).open(path).expect("The shader file could not be opened");
 		f.write_all(out.as_bytes()).expect("Could not open out file.");
