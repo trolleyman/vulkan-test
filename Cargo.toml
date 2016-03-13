@@ -7,7 +7,6 @@ build = "src/build.rs"
 [build-dependencies]
 vulkano-shaders = { git = "https://github.com/tomaka/vulkano" }
 glsl-to-spirv = { git = "https://github.com/tomaka/vulkano" }
-walkdir = "^0.1.5"
 
 [dependencies]
 vulkano = { git = "https://github.com/tomaka/vulkano" }
