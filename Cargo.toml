@@ -1,0 +1,6 @@
+[package]
+name = "vulkan-test"
+version = "0.1.0"
+authors = ["trolleyman <cgtrolley@gmail.com>"]
+
+[dependencies]
