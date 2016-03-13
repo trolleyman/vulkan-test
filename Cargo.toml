@@ -11,3 +11,7 @@ glsl-to-spirv = { git = "https://github.com/tomaka/vulkano" }
 [dependencies]
 vulkano = { git = "https://github.com/tomaka/vulkano" }
 vulkano-shaders = { git = "https://github.com/tomaka/vulkano" }
+glutin = "^0.4.9"
+
+[target.'cfg(windows)'.dependencies]
+kernel32-sys = "^0.2.1"
