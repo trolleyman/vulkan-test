@@ -12,10 +12,10 @@ mod render;
 use render::Render;
 
 fn main() {
-	let r = match Render::new() {
+	let mut r = match Render::new() {
 		Ok(r)  => r,
 		Err(e) => {
-			writeln!(io::stderr(), "Error intialising renderer: {}", e);
+			writeln!(io::stderr(), "Error intialising renderer: {}", e).ok();
 			exit(1);
 		},
 	};
