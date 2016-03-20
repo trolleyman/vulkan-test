@@ -1,3 +1,4 @@
+#![feature(question_mark)]
 #[macro_use]
 extern crate vulkano;
 extern crate vulkano_shaders;
@@ -21,5 +22,4 @@ fn main() {
 	};
 	
 	r.event_loop();
-	//let swapchain = Swapchain::new(&device, &surface, 2, );
 }
